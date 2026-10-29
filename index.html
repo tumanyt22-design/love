@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тебе письмо</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marck+Script&display=swap">
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 20% 15%,#ffd3a866,transparent 45%),radial-gradient(circle at 85% 80%,#ff8fb877,transparent 50%),linear-gradient(180deg,#7a3a8a 0%,#d4607f 55%,#ffae8a 100%);color:#fff4fa;font-family:'Cormorant Garamond',Georgia,serif;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+body::before{content:"";position:fixed;inset:-10%;pointer-events:none;background:radial-gradient(circle,#ffffff2e 0 5px,transparent 6px) 0 0/90px 110px,radial-gradient(circle,#ffd1e83a 0 11px,transparent 12px) 40px 50px/150px 170px;animation:dr 40s linear infinite}
+@keyframes dr{to{background-position:0 -440px,40px -510px}}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;transition:opacity 1.2s ease}
+.hide{opacity:0}.hide,.hide *{pointer-events:none!important}
+.hello{font-size:clamp(1.6rem,7vw,2.3rem);font-weight:500;line-height:1.4;opacity:0;animation:fi 2s .5s forwards}
+.hello i{font-family:'Marck Script',cursive;font-size:1.25em;color:#ffd6ea}
+@keyframes fi{to{opacity:1}}
+.env{position:relative;width:260px;height:170px;margin-top:50px;background:#e9e6f2;border-radius:6px;box-shadow:0 20px 50px #0008,0 0 40px #8f7bff44;opacity:0;transition:opacity 1.5s;cursor:pointer}
+.env.show{opacity:1}
+.flap{position:absolute;left:0;top:0;width:100%;height:100px;background:#d9d5ea;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .9s}
+.env.open .flap{transform:rotateX(180deg)}
+.seal{position:absolute;left:50%;top:78px;width:46px;height:46px;margin-left:-23px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#a58bff,#5b3fb5);box-shadow:0 3px 8px #0006;display:flex;align-items:center;justify-content:center;color:#e7dcff;transition:opacity .5s}
+.env.open .seal{opacity:0}
+.sub{margin-top:26px;font-family:'Marck Script',cursive;color:#ffe0f0;opacity:0;transition:opacity 1.5s;animation:pl 2.4s ease-in-out infinite}
+.sub.show{opacity:1}
+@keyframes pl{50%{transform:translateY(-4px)}}
+.paper{width:min(92vw,420px);max-height:78%;overflow:auto;background:#f7f3ee;color:#3b2f4a;border-radius:10px;padding:28px 24px;box-shadow:0 25px 60px #000a;font-family:'Marck Script',cursive;font-size:1.3rem;line-height:1.55;text-align:left}
+.paper p{margin:0 0 14px;opacity:0;animation:fi 1.6s forwards}
+.gold{font:inherit;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:1.15rem;color:#4a3300;background:linear-gradient(#ffe3a0,#f5b955);border:0;border-radius:999px;padding:14px 38px;box-shadow:0 0 28px #f5b95577;cursor:pointer}
+.gold:active{transform:scale(.96)}
+#next{margin-top:22px;opacity:0;transition:opacity 1.5s}
+#next.show{opacity:1}
+#ui{justify-content:flex-end;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));pointer-events:none}
+#hint{font-family:'Marck Script',cursive;font-size:1.15rem;color:#fff;text-shadow:0 1px 8px #5a1a6e;margin-bottom:14px;min-height:1.6em;transition:opacity 1s}
+#modes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:380px;pointer-events:auto}
+.chip{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:1rem;color:#fff;background:#ffffff22;border:1px solid #ffffff66;border-radius:999px;padding:8px 14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer;transition:all .4s}
+.chip.on{background:linear-gradient(#ffe3a0,#f5b955);color:#4a3300;border-color:transparent;box-shadow:0 0 18px #f5b95588}
+#nm{position:fixed;left:0;right:0;top:42%;transform:translateY(-50%);text-align:center;font-family:'Marck Script',cursive;font-size:clamp(2.4rem,12vw,3.6rem);color:#fff;text-shadow:0 0 22px #ff7eb8,0 0 8px #7b2f7f,0 2px 4px #0006;opacity:0;transition:opacity 2s;pointer-events:none}
+#nm.show{opacity:1}
+.pop{position:fixed;transform:translateX(-50%);width:max-content;max-width:230px;text-align:center;font-family:'Marck Script',cursive;font-size:1.5rem;color:#fff;text-shadow:0 0 14px #ff8cc6,0 2px 6px #0008;pointer-events:none;z-index:5;animation:up 2.6s ease-out forwards}
+#side{position:fixed;right:12px;top:34%;display:flex;flex-direction:column;gap:10px;pointer-events:auto}
+#side .chip{width:44px;height:44px;padding:0;font-size:1.3rem}
+@keyframes up{0%{opacity:0;margin-top:0}15%{opacity:1}100%{opacity:0;margin-top:-110px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<section class="screen" id="s1">
+  <div class="hello"><i id="n1"></i>,<br>тебе письмо</div>
+  <div class="env" id="env"><div class="flap"></div><div class="seal">♥</div></div>
+  <div class="sub" id="sub">открой это</div>
+</section>
+
+<section class="screen hide" id="s2">
+  <div class="paper" id="paper"></div>
+  <button class="gold" id="next">Дальше ✦</button>
+</section>
+
+<section class="screen hide" id="s3">
+  <div id="nm"></div>
+  <div id="ui" class="screen">
+    <div id="hint"></div>
+    <div id="modes"></div>
+  </div>
+  <div id="side"><button class="chip" id="zi">+</button><button class="chip" id="zo">−</button><button class="chip" id="bg">🎨</button></div>
+</section>
+
+<script>
+// ✏️ Меняй здесь: имя, письмо, слова, комплименты
+var NAME = "Гульназ";
+var LETTER = [
+  "{name}, я хотел сделать для тебя что-то особенное.",
+  "Ты человек, рядом с которым хочется улыбаться без причины.",
+  "С тобой даже самый обычный вечер становится тёплым и уютным.",
+  "У тебя удивительно доброе сердце, и я очень ценю это."
+];
+var WORDS = ["нежность","тепло","улыбка","уют","свет","солнышко","чудо","красивая","добрая","родная","любимая","умница","счастье","звезда","{name}","милая","мечта","радость","магия","лучик","нежная","особенная","моя","{name}"];
+var PRAISE = ["{name}, ты чудо ✨","Твоя улыбка согревает","Ты красивее любой галактики","Рядом с тобой тепло","Ты моё солнышко","Ты самая добрая","С тобой всегда уютно","Спасибо, что ты есть","Ты светишься ♥","Ты особенная","С тобой всё лучше"];
+
+NAME = NAME.trim();
+function fx(s){ return s.split('{name}').join(NAME); }
+function $(i){ return document.getElementById(i); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+function cl(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function sm(x){ x=cl(x,0,1); return x*x*(3-2*x); }
+$('n1').textContent = NAME; $('nm').textContent = NAME;
+
+/* ---------- canvas ---------- */
+var cv=$('c'), cx=cv.getContext('2d'), W, H, K, dpr=Math.min(devicePixelRatio||1,2);
+function size(){ W=innerWidth; H=innerHeight; K=cl(W/390,.95,1.35); cv.width=W*dpr; cv.height=H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); }
+addEventListener('resize',size); size();
+
+var stars=[]; for(var i=0;i<130;i++) stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.3,p:Math.random()*6.28});
+
+/* режимы: ax = наклон, spin = вращается ли, glow = цвет свечения */
+var MODES=[
+ {n:'✦ Галактика',ax:.7,spin:1,glow:[255,205,235]},
+ {n:'♥ Сердце',ax:0,spin:0,glow:[255,110,170]},
+ {n:'● Сфера',ax:.25,spin:1,glow:[190,160,255]},
+ {n:'◎ Кольца',ax:.5,spin:1,glow:[255,215,150]},
+ {n:'✿ Цветок',ax:0,spin:0,glow:[255,160,205]}
+];
+
+var N=320, P=[], CL=['#ffffff','#ffe6f3','#fff0c8','#e9e0ff'];
+for(var i=0;i<N;i++){
+  var r=Math.pow(Math.random(),.75), arm=i%2, j=Math.random()-.5, th=arm*Math.PI+r*5.2+j*.9*r;
+  var t=Math.random()*6.2832, u=1-Math.pow(Math.random(),3)*.85;
+  var sy=1-2*(i+.5)/N, sr=Math.sqrt(1-sy*sy), ph=i*2.39996;
+  var ra=Math.random()<.55?.62+.2*Math.random():.9+.28*Math.random(), rt=Math.random()*6.2832;
+  var ft=Math.random()*12.566, fr=Math.cos(2.5*ft)*(.3+.7*Math.random());
+  P.push({
+    w:fx(WORDS[Math.floor(Math.random()*WORDS.length)]), s:[11,14,17][i%3], d:Math.random(), c:CL[i%4],
+    x:0,y:0,z:0,z2:0,X:0,Y:0,ps:1,
+    t:[
+      [r*Math.cos(th),(Math.random()-.5)*.1*(1-r),r*Math.sin(th)],
+      [16*Math.pow(Math.sin(t),3)*u/17,-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*u/17-.12,(Math.random()-.5)*.3],
+      [sr*Math.cos(ph)*.95,sy*.95,sr*Math.sin(ph)*.95],
+      i%3!==0?[ra*Math.cos(rt),(Math.random()-.5)*.04,ra*Math.sin(rt)]:[sr*Math.cos(ph)*.42,sy*.42,sr*Math.sin(ph)*.42],
+      [fr*Math.cos(ft),fr*Math.sin(ft),(Math.random()-.5)*.16]
+    ]
+  });
+}
+
+var zm=1, zc=1, bgi=0, on=false, g=0, mode=0, ay=0, vel=0, dax=0, axC=.7, flat=0, hb=0, T=0, gc=[255,205,235], bursts=[], SS=[];
+
+function frame(){
+  T+=.016; cx.clearRect(0,0,W,H);
+  cx.textAlign='center'; cx.textBaseline='middle'; cx.fillStyle='#fff';
+  stars.forEach(function(s){ cx.globalAlpha=.3+.7*Math.abs(Math.sin(T*.8+s.p)); cx.beginPath(); cx.arc(s.x*W,s.y*H,s.r,0,6.2832); cx.fill(); });
+  if(on){
+    var M=MODES[mode];
+    g+=(1-g)*.025; vel*=.95; zc+=(zm-zc)*.15;
+    flat+=((M.spin?0:1)-flat)*.05; hb+=((mode===1?1:0)-hb)*.05;
+    ay+=.004*(1-flat)+vel; if(flat>.98) ay%=6.2832;
+    axC+=(M.ax+dax-axC)*.05;
+    for(var q=0;q<3;q++) gc[q]+=(M.glow[q]-gc[q])*.04;
+    var ang=ay*(1-flat)+Math.sin(T*.6)*.45*flat;
+    var cX=W/2, cY=H*.42, R=Math.min(W*.46,H*.34)*sm(g)*zc*(1+.035*Math.sin(T*3)*hb);
+    var ca=Math.cos(ang), sa=Math.sin(ang), cb=Math.cos(axC), sb=Math.sin(axC);
+
+    var gl=cx.createRadialGradient(cX,cY,0,cX,cY,R*1.05);
+    gl.addColorStop(0,'rgba('+(gc[0]|0)+','+(gc[1]|0)+','+(gc[2]|0)+','+(.55*sm(g))+')');
+    gl.addColorStop(1,'rgba('+(gc[0]|0)+','+(gc[1]|0)+','+(gc[2]|0)+',0)');
+    cx.globalAlpha=1; cx.fillStyle=gl; cx.fillRect(0,0,W,H);
+
+    for(var i=0;i<N;i++){
+      var p=P[i], tg=p.t[mode], rate=.025+.05*p.d;
+      p.x+=(tg[0]-p.x)*rate; p.y+=(tg[1]-p.y)*rate; p.z+=(tg[2]-p.z)*rate;
+      var x1=p.x*ca+p.z*sa, z1=-p.x*sa+p.z*ca;
+      var y2=p.y*cb-z1*sb; p.z2=p.y*sb+z1*cb;
+      p.ps=1/(1-.22*p.z2);
+      p.X=cX+x1*R*p.ps; p.Y=cY+y2*R*p.ps;
+    }
+    P.sort(function(a,b){ return a.z2-b.z2; });
+
+    cx.lineJoin='round'; cx.lineWidth=3; cx.strokeStyle='rgba(75,15,95,.5)';
+    var lastF='';
+    for(var i=0;i<N;i++){
+      var p=P[i], dep=cl((p.z2+1)/2,0,1);
+      var f='700 '+Math.round(p.s*K*Math.sqrt(zc)*(.8+.45*dep))+'px "Cormorant Garamond",Georgia,serif';
+      if(f!==lastF){ cx.font=f; lastF=f; }
+      cx.globalAlpha=sm(g*1.5)*(.5+.5*dep);
+      if(dep>.3) cx.strokeText(p.w,p.X,p.Y);
+      cx.fillStyle=p.c; cx.fillText(p.w,p.X,p.Y);
+    }
+
+    SS=SS.filter(function(s){ return s.l>0; });
+    SS.forEach(function(s){
+      s.x+=s.vx; s.y+=s.vy; s.l--;
+      var tx=s.x-s.vx*9, ty=s.y-s.vy*9, gr=cx.createLinearGradient(s.x,s.y,tx,ty);
+      gr.addColorStop(0,'rgba(255,255,255,.95)'); gr.addColorStop(1,'rgba(255,255,255,0)');
+      cx.globalAlpha=Math.min(1,s.l/20); cx.strokeStyle=gr; cx.lineWidth=2;
+      cx.beginPath(); cx.moveTo(s.x,s.y); cx.lineTo(tx,ty); cx.stroke();
+    });
+
+    bursts=bursts.filter(function(b){ return b.l>0; });
+    cx.font='20px serif';
+    bursts.forEach(function(b){
+      b.x+=b.vx; b.y+=b.vy; b.vy-=.02; b.vx*=.985; b.l-=.012;
+      cx.globalAlpha=Math.max(0,b.l); cx.fillStyle=b.c; cx.font=b.s+'px serif';
+      cx.fillText(b.ch,b.x,b.y);
+    });
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+
+/* ---------- режимы ---------- */
+MODES.forEach(function(m,i){
+  var b=document.createElement('button'); b.className='chip'+(i===0?' on':''); b.textContent=m.n;
+  b.onclick=function(){ setMode(i); chime(); };
+  $('modes').appendChild(b);
+});
+function setMode(i){
+  mode=i; dax=0;
+  Array.prototype.forEach.call($('modes').children,function(b,k){ b.classList.toggle('on',k===i); });
+  $('nm').classList.toggle('show',i===1);
+}
+
+/* ---------- подсказки, звёзды, звук, сердечки ---------- */
+var ht;
+function say(t,ms){ $('hint').textContent=t; $('hint').style.opacity=1; clearTimeout(ht); ht=setTimeout(function(){ $('hint').style.opacity=0; },ms||5000); }
+function star(){
+  SS.push({x:W*(.45+.55*Math.random()),y:Math.random()*H*.25,vx:-(7+4*Math.random()),vy:3+2*Math.random(),l:70});
+}
+setInterval(function(){ if(!on) return; star(); setTimeout(function(){ say('звезда упала, загадай желание ✨',3500); },600); },9000);
+
+var AC;
+function chime(){
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    var o=AC.createOscillator(), gn=AC.createGain(), n=AC.currentTime, f=[523,587,659,784,880,1047,1175][Math.random()*7|0];
+    o.type='sine'; o.frequency.value=f;
+    gn.gain.setValueAtTime(.0001,n); gn.gain.exponentialRampToValueAtTime(.12,n+.02); gn.gain.exponentialRampToValueAtTime(.0001,n+1.4);
+    o.connect(gn); gn.connect(AC.destination); o.start(); o.stop(n+1.5);
+  }catch(e){}
+}
+function tap(x,y){
+  for(var i=0;i<14;i++){
+    var a=Math.random()*6.2832, v=1+Math.random()*2.2;
+    bursts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1,l:1,s:12+Math.random()*14,ch:Math.random()<.7?'♥':'✦',c:['#ff9ec4','#ffd6ea','#ffe3a0','#ffffff'][i%4]});
+  }
+  var e=document.createElement('div'); e.className='pop'; e.textContent=fx(PRAISE[Math.random()*PRAISE.length|0]);
+  e.style.left=cl(x,120,innerWidth-120)+'px'; e.style.top=(y-30)+'px';
+  document.body.appendChild(e); setTimeout(function(){ e.remove(); },2700);
+  chime();
+}
+
+/* ---------- flow ---------- */
+setTimeout(function(){ $('env').classList.add('show'); $('sub').classList.add('show'); },3000);
+$('env').onclick=async function(){
+  this.classList.add('open'); $('sub').classList.remove('show');
+  await sleep(1300);
+  $('s1').classList.add('hide');
+  var pa=$('paper');
+  LETTER.forEach(function(t,i){ var e=document.createElement('p'); e.textContent=fx(t); e.style.animationDelay=(.8+i*1.8)+'s'; pa.appendChild(e); });
+  $('s2').classList.remove('hide');
+  setTimeout(function(){ $('next').classList.add('show'); },(LETTER.length*1.8+1.5)*1000);
+};
+$('next').onclick=function(){
+  $('s2').classList.add('hide'); $('s3').classList.remove('hide'); on=true; chime();
+  say('крути · двумя пальцами приближай · касайся экрана',7000);
+  setTimeout(star,4000);
+};
+
+/* ---------- касания ---------- */
+var D=null;
+var PT={}, pd=0;
+function pdist(){ var k=Object.keys(PT); return Math.hypot(PT[k[0]].x-PT[k[1]].x,PT[k[0]].y-PT[k[1]].y)||1; }
+$('s3').addEventListener('pointerdown',function(e){
+  if(e.target.closest('button')) return;
+  PT[e.pointerId]={x:e.clientX,y:e.clientY};
+  if(Object.keys(PT).length===2){ D=null; pd=pdist(); return; }
+  D={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,t:Date.now(),m:0};
+});
+addEventListener('pointermove',function(e){
+  if(PT[e.pointerId]){ PT[e.pointerId]={x:e.clientX,y:e.clientY}; if(Object.keys(PT).length===2){ var nd=pdist(); zm=cl(zm*nd/pd,.6,3.2); pd=nd; return; } }
+  if(!D||!on) return;
+  var dx=e.clientX-D.lx, dy=e.clientY-D.ly; D.lx=e.clientX; D.ly=e.clientY; D.m+=Math.abs(dx)+Math.abs(dy);
+  vel=cl(vel+dx*.0012,-.08,.08); dax=cl(dax+dy*.003,-.35,.5);
+});
+addEventListener('pointerup',function(e){ delete PT[e.pointerId]; if(D&&D.m<12&&Date.now()-D.t<450) tap(D.x,D.y); D=null; });
+addEventListener('pointercancel',function(e){ delete PT[e.pointerId]; D=null; });
+addEventListener('wheel',function(e){ zm=cl(zm*(e.deltaY<0?1.1:.91),.6,3.2); });
+$('zi').onclick=function(){ zm=cl(zm*1.3,.6,3.2); };
+$('zo').onclick=function(){ zm=cl(zm/1.3,.6,3.2); };
+var BG=[
+ 'radial-gradient(circle at 20% 15%,#ffd3a866,transparent 45%),radial-gradient(circle at 85% 80%,#ff8fb877,transparent 50%),linear-gradient(180deg,#7a3a8a 0%,#d4607f 55%,#ffae8a 100%)',
+ 'radial-gradient(circle at 25% 20%,#ffffff44,transparent 45%),linear-gradient(180deg,#5b4bb7 0%,#9b7be0 55%,#f3a6d6 100%)',
+ 'radial-gradient(circle at 80% 15%,#a78bfa55,transparent 45%),linear-gradient(180deg,#0b1030 0%,#2a1b5e 55%,#8a3a8f 100%)',
+ 'radial-gradient(circle at 20% 80%,#ffffff33,transparent 45%),linear-gradient(180deg,#14507a 0%,#2a9d9a 55%,#9be0c4 100%)'
+];
+$('bg').onclick=function(){ bgi=(bgi+1)%BG.length; document.body.style.background=BG[bgi]; chime(); };
+</script>
+</body>
+</html>
